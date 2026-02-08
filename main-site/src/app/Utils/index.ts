@@ -1,41 +1,16 @@
-const handleGenerateCred = (name: string) => {
-     // create and save in local storage
+class Helper {
 
-     const username = name.trim();
-     let sanitizedName = "";
-     for (const char of username) {
-          if (char == " ") {
-               sanitizedName += "-";
-               continue;
-          }
-          sanitizedName += char;
-     }
+    handleGetUserFromLocal = () => {
+        const user = localStorage.getItem("user-detail");
+        if (user) {
+            const parsedUser = JSON.parse(user);
+            return parsedUser;
+        }
 
-     const user = {
-          id: generateRandomId(),
-          name: name,
-          email: `${sanitizedName}@codesync.com`
-
-     }
-
-     localStorage.setItem("user-detail", JSON.stringify(user));
-     return user;
+        return null;
+    }
 
 }
 
-function generateRandomId(length = 30) {
-     var chars =
-          "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz".split("");
-
-     if (!length) {
-          length = Math.floor(Math.random() * chars.length);
-     }
-
-     var str = "";
-     for (var i = 0; i < length; i++) {
-          str += chars[Math.floor(Math.random() * chars.length)];
-     }
-     return str;
-}
-
-export { handleGenerateCred }
+const helper = new Helper();
+export { helper }

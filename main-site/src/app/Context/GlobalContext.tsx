@@ -1,12 +1,16 @@
 "use client";
 
 import { BACKEND_URL } from "@/app/Config/endPoints";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { io } from "socket.io-client";
+import toast from "react-hot-toast";
 import Loader from "../Modules/Loader";
 import { useRoomStore } from "../Store/store";
-import { GlobalContextPayload, RoomDetailsType } from "../Interfaces";
+import { GlobalContextPayload, RoomDetailsType, SettingsType, SettingType, ShareDilogBoxType } from "../Interfaces";
+import ShareDialog from "../Modules/ShareDilog";
+import { roomHelper } from "../Utils/room";
+import { helper } from "../Utils";
 
 
 const GlobalContext = React.createContext<GlobalContextPayload | undefined>(undefined);
@@ -17,21 +21,31 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
         withCredentials: true
     }), []);
 
-    const { setCurrentRoom, setRoomError, currentRoom } = useRoomStore();
-    const [loader, setLoader] = useState<boolean>(true);
-    const [editorText, setEditorText] = useState<string>(`// write your code here....`);
+
+    const [loader, setLoader] = useState<boolean>(false);
+    const { setCurrentRoom, setRoomError, currentRoom, updateRoomSettings, setUser } = useRoomStore();
+    const [shareDilog, setShareDilog] = useState<ShareDilogBoxType | null>(null);
+    const [editorText, setEditorText] = useState<string>("");
     const router = useRouter();
+    const pathName = usePathname();
 
     const editorRef = useRef<any>(null);
     const isRemoteUpdate = useRef(false);
+
+    const { handleGenerateCred, assignRandomName } = roomHelper;
+    const { handleGetUserFromLocal } = helper;
 
 
 
     const handleOnRoomCreation = useCallback((roomDetails: RoomDetailsType) => {
         setCurrentRoom(roomDetails);
-        router.push(`/room/${roomDetails.roomId}`);
+        toast.success(`Room created ${roomDetails.roomId}`);
+        const url = `/room/${roomDetails.roomId}`;
+        if (pathName == url) return;
 
-    }, []);
+        router.push(url);
+
+    }, [router, setCurrentRoom, toast]);
 
     const handleRoomExists = useCallback((room: RoomDetailsType | null) => {
         if (!room) {
@@ -40,8 +54,11 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
         }
 
         setCurrentRoom(room);
-        router.push(`/room/${room.roomId}`);
-    }, [router, setCurrentRoom]);
+        toast.success(`Room joined sucessfully ${room.roomId}`)
+        const url = `/room/${room.roomId}`;
+        if (pathName == url) return;
+        router.push(url);
+    }, [router, setCurrentRoom, toast]);
 
     const handleEditorOnChange = (value: string) => {
         if (isRemoteUpdate.current) return;
@@ -68,9 +85,29 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
             },
         ]);
 
+
+        setEditorText(incomingText);
         isRemoteUpdate.current = false;
 
     }
+
+    const handleSetUpdatedSettings = useCallback(({ type, updatedSettings }: { type: string; updatedSettings: any }) => {
+
+        switch (type) {
+            case SettingsType.LANG:
+                updateRoomSettings({ languageType: updatedSettings.languageType });
+                break;
+
+            case SettingsType.EDITOR:
+                updateRoomSettings({ themeType: updatedSettings.themeType });
+                break;
+
+            case SettingsType.MEMBER:
+                updateRoomSettings({ membersLimit: updatedSettings.membersLimit });
+                break;
+        }
+
+    }, [updateRoomSettings]);
 
 
     useEffect(() => {
@@ -78,19 +115,20 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
         socket.on("room-created", handleOnRoomCreation);
         socket.on("document-update", handleUpdateEditor);
         socket.on("room-exists", handleRoomExists);
+        socket.on("updated-settings", handleSetUpdatedSettings);
 
         return () => {
+            socket.off("updated-settings", handleSetUpdatedSettings);
             socket.off("room-created", handleOnRoomCreation);
             socket.off("document-update", handleUpdateEditor);
             socket.off("room-exists", handleRoomExists);
         }
 
-    }, [socket]);
+    }, [socket, handleSetUpdatedSettings]);
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             setLoader(false);
-            document.body.style.overflowY = "auto";
         }, 2500);
 
         return () => {
@@ -99,17 +137,29 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
     }, [loader]);
 
 
-    const values = {
-        socket,
-        editorText,
-        handleEditorOnChange,
-        editorRef,
-        setLoader
-    }
+    useEffect(() => {
+        let details = handleGetUserFromLocal() || handleGenerateCred(assignRandomName());
+        console.log('details' , details);
+        setUser(details);
+    }, []);
+
+
+
 
     return (
-        <GlobalContext.Provider value={values}>
+        <GlobalContext.Provider value={{
+            socket,
+            editorText,
+            editorRef,
+            shareDilog,
+            setShareDilog,
+            setLoader,
+            setEditorText,
+            handleEditorOnChange,
+            handleUpdateEditor,
+        }}>
             {loader && (<Loader />)}
+            {shareDilog && (<ShareDialog />)}
             {children}
         </GlobalContext.Provider>
     )

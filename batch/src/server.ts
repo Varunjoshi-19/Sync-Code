@@ -6,7 +6,10 @@ import { createdRooms } from "./cache/room";
 
 async function startServer() {
   const app = express();
+
   const PORT = process.env.PORT || 4000;
+
+  app.use(express.json());
 
   app.use(cors({
     origin: "http://localhost:3000",
@@ -19,7 +22,7 @@ async function startServer() {
   const socket = new SocketConnection();
   socket.establishConnection(server);
 
-  app.get("populate-document/:roomId", (req, res) => {
+  app.get("/api/populate-document/:roomId", (req, res) => {
     const roomId = req.params.roomId;
     if (!roomId) {
       res.status(404).json({ message: "Invalid Room ID !!" });
@@ -49,27 +52,5 @@ async function startServer() {
 
 startServer();
 
-// const startWebSocketServer = () =>  {
 
-// const app = express();
-// const server = http.createServer(app);
-
-// const wss = new ws.WebSocket.Server({server});
-
-// wss.on("connection", (conn, req) => {
-//   setupWSConnection(conn, req);
-// });
-
-// app.get("/", (req, res) => {
-//   res.send("Realtime server running");
-// });
-
-// server.listen(4000, () => {
-//   console.log("Yjs WebSocket Server running on port 4000");
-// });
-
-// }
-
-
-// startWebSocketServer();
 

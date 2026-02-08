@@ -69,5 +69,5 @@ const generateRoomName = () => {
     return listOfRooms[index];
 }
 
-export { handleCreateRoomId , generateRoomName }
+export { handleCreateRoomId, generateRoomName }
 

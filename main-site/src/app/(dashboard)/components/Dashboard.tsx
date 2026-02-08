@@ -1,63 +1,70 @@
 "use client";
 
 import { UseGlobalContext } from "@/app/Context/GlobalContext";
+import useRoom from "@/app/hooks";
 import { ModalInfo } from "@/app/Interfaces";
 import Modal from "@/app/Modules/Modal";
-import { handleGenerateCred } from "@/app/Utils";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useCallback, useEffect } from "react";
 
+type OptionType = "CREATE" | "JOIN";
 
 const Dashboard = () => {
 
   const [modalInfo, setModalInfo] = useState<ModalInfo | null>(null);
-  const { socket, setLoader } = UseGlobalContext();
-
+  const { socket } = UseGlobalContext();
+  const { handleCreateRoom } = useRoom();
+  const router = useRouter();
 
   const handleJoinRoom = (roomId: string) => {
-    socket.emit('check-room-existance', {roomId , socketId : socket.id});
+    if (!socket) return;
 
+    socket.emit("check-room-existance", {
+      roomId,
+      socketId: socket.id,
+    });
   }
 
-  const handleCreateRoom = (name: string) => {
-    const details = handleGenerateCred(name);
-    socket.emit("create-room", details);
-    document.body.style.overflow = "hidden";
-    setLoader(true);
-  }
+  const modalTemplates: Record<OptionType, ModalInfo> = {
+    CREATE: {
+      type: "CREATE",
+      isOpen: true,
+      title: "Create a new room",
+      description:
+        "Enter your name to start a room and invite others to collaborate.",
+      btnType: "Create Room",
+      holder: "Your name",
+      callbackFun: handleCreateRoom,
+    },
 
-  const chooseOption = (type: string) => {
-    switch (type) {
-      case "CREATE": {
-        setModalInfo({
-          type ,
-          isOpen: true,
-          title: "Create a new room",
-          description: "Enter your name to start a room and invite others to collaborate.",
-          btnType: "Create Room",
-          holder: "Your name",
-          callbackFun: handleCreateRoom,
-        });
-        break;
-      }
-
-      case "JOIN": {
-        setModalInfo({
-          type,
-          isOpen: true,
-          title: "Join an existing room",
-          description: "Enter the room ID shared with you to join the session.",
-          btnType: "Join Room",
-          holder: "Room ID",
-          callbackFun: handleJoinRoom,
-        });
-        break;
-      }
-
-      default:
-        return null;
-    }
+    JOIN: {
+      type: "JOIN",
+      isOpen: true,
+      title: "Join an existing room",
+      description:
+        "Enter the room ID shared with you to join the session.",
+      btnType: "Join Room",
+      holder: "Room ID",
+      callbackFun: handleJoinRoom,
+    },
   };
 
+
+  const chooseOption = useCallback((type: OptionType) => {
+    setModalInfo(modalTemplates[type]);
+  }, []);
+
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key.toLowerCase() === "j") {
+        chooseOption("JOIN");
+      }
+    };
+
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [chooseOption]);
 
 
   return (
@@ -81,7 +88,7 @@ const Dashboard = () => {
         <div className="relative z-10 max-w-5xl mx-auto px-6 py-16">
           <header className="flex items-center justify-between mb-20">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#238636] to-[#1f6feb] flex items-center justify-center font-mono text-sm font-bold">
+              <div className="w-8 h-8 rounded-lg bg-linear-to-br from-[#238636] to-[#1f6feb] flex items-center justify-center font-mono text-sm font-bold">
                 &lt;/&gt;
               </div>
               <span className="font-mono font-semibold text-lg tracking-tight">
@@ -89,20 +96,20 @@ const Dashboard = () => {
               </span>
             </div>
             <nav className="flex items-center gap-6 text-sm text-[#8b949e]">
-              <a href="/" className="hover:text-[#e6edf3] transition-colors">
-                Docs
+              <a href="/pricing" className="hover:text-[#e6edf3] transition-colors">
+                Pricing
               </a>
-              <a href="/" className="hover:text-[#e6edf3] transition-colors">
-                Examples
+              <a href="/register" className="hover:text-[#e6edf3] transition-colors">
+                Sign Up
               </a>
-              <button className="px-4 py-2 rounded-lg bg-[#21262d] border border-[#30363d] hover:border-[#8b949e] hover:bg-[#30363d] transition-colors">
-                Sign in
+              <button onClick={() => router.push("/login")} className="cursor-pointer px-4 py-2 rounded-lg bg-[#21262d] border border-[#30363d] hover:border-[#8b949e] hover:bg-[#30363d] transition-colors">
+                Log In
               </button>
             </nav>
           </header>
 
           <section className="text-center mb-20">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-[#e6edf3] via-[#58a6ff] to-[#3fb950]">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4 bg-clip-text text-transparent bg-linear-to-r from-[#e6edf3] via-[#58a6ff] to-[#3fb950]">
               Code together in real time
             </h1>
             <p className="text-xl text-[#8b949e] max-w-2xl mx-auto mb-12">

@@ -70,13 +70,11 @@ export default function Modal({ modalInfo, closeModal }: ModalTypes) {
       role="dialog"
       aria-modal="true"
     >
-      {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={() => closeModal(null)}
       />
 
-      {/* Modal */}
       <div className="relative bg-white w-[90%] max-w-md rounded-2xl shadow-2xl p-8 animate-scaleIn">
         <h2 className="text-xl font-semibold text-center text-black">
           {title}

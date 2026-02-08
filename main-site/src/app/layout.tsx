@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 import { GlobalContextProvider } from "./Context/GlobalContext";
 
 const geistSans = Geist({
@@ -25,8 +26,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden!`}>
         <GlobalContextProvider>
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 1500,
+            }}
+          />
           {children}
         </GlobalContextProvider>
       </body>
