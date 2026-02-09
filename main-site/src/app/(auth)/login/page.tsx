@@ -32,7 +32,7 @@ export default function LoginPage() {
 
         <div className="text-center text-sm">
           <p className="mb-2">
-            New to Codeshare? <a href="/register" className="text-blue-600 cursor-pointer">Sign up here.</a>
+            New to CodeSync? <a href="/register" className="text-blue-600 cursor-pointer">Sign up here.</a>
           </p>
 
           <a className="text-blue-600 cursor-pointer">

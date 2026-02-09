@@ -2,24 +2,33 @@
 
 import { UseGlobalContext } from "@/app/Context/GlobalContext";
 import useRoom from "@/app/hooks";
-import { ModalInfo } from "@/app/Interfaces";
+import { ModalInfo, OptionType } from "@/app/Interfaces";
 import Modal from "@/app/Modules/Modal";
+import { useRoomStore } from "@/app/Store/store";
 import { useRouter } from "next/navigation";
-import { useState, useCallback, useEffect } from "react";
+import { useState , useEffect } from "react";
+import toast from "react-hot-toast";
 
-type OptionType = "CREATE" | "JOIN";
+
 
 const Dashboard = () => {
 
   const [modalInfo, setModalInfo] = useState<ModalInfo | null>(null);
+  const { user } = useRoomStore();
   const { socket } = UseGlobalContext();
   const { handleCreateRoom } = useRoom();
   const router = useRouter();
 
+
   const handleJoinRoom = (roomId: string) => {
-    if (!socket) return;
+    if (!socket || !user) {
+      alert(`${user} ${socket.id}`)
+      toast.error("Failed to Join socket Id or User Id missing !!");
+      return;
+    }
 
     socket.emit("check-room-existance", {
+      userId: user.id,
       roomId,
       socketId: socket.id,
     });
@@ -50,9 +59,9 @@ const Dashboard = () => {
   };
 
 
-  const chooseOption = useCallback((type: OptionType) => {
+  const chooseOption = (type: OptionType) => {
     setModalInfo(modalTemplates[type]);
-  }, []);
+  }
 
 
   useEffect(() => {
@@ -65,6 +74,7 @@ const Dashboard = () => {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [chooseOption]);
+
 
 
   return (

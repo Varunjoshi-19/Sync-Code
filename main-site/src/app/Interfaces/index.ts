@@ -7,7 +7,10 @@ export type RoomDetailsType = {
     owner: string;
     expirationTime: number;
     roomTextCode: string;
-    joinedMembers: number;
+    joinedMembers: {
+        socketId: string,
+        userId: string
+    }[];
     configSettings: {
         languageType: SupportedLangType;
         themeType: EditorThemeType,
@@ -31,10 +34,10 @@ export type RoomStore = {
     currentRoom: RoomDetailsType | null;
     roomError: string | null;
     editorText: string;
-    loggedIn : boolean;
+    loggedIn: boolean;
 
 
-      setLoggedIn : (status : boolean) => void;
+    setLoggedIn: (status: boolean) => void;
     setCurrentRoom: (room: RoomDetailsType) => void;
     setEditorText: (text: string) => void;
     setRoomError: (error: string | null) => void;
@@ -116,3 +119,4 @@ export enum SettingsType {
 }
 
 export type SettingType = SettingsType;
+export type OptionType = "CREATE" | "JOIN";

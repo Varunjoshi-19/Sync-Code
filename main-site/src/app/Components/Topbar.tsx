@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useRoomStore } from "../Store/store";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import { menu } from "../constants";
 
 export default function Topbar({ options = true }: { options: boolean }) {
 
@@ -36,13 +37,6 @@ export default function Topbar({ options = true }: { options: boolean }) {
 
   const AccountDetails = () => {
 
-    const menu = [
-      "Your Codeshares",
-      "New Codeshare",
-      "Account Settings",
-      "Log Out",
-    ];
-
     return (
       <div className="z-10 absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border">
         {menu.map((item, i) => (
@@ -66,13 +60,11 @@ export default function Topbar({ options = true }: { options: boolean }) {
         <span className="text-lg font-semibold text-white">Code-Sync</span>
       </div>
 
-      {options &&
-
-        !loggedIn ?
+      {options && (loggedIn ?
         <div className="relative">
           <span
             onClick={() => setAccountDetails(prev => !prev)}
-            style={{ border : `2px solid ${accountDetails ?  "white" : "transparent" }`}}
+            style={{ border: `2px solid ${accountDetails ? "white" : "transparent"}` }}
             className={`text-white opacity-50 cursor-pointer px-2 py-2 
         hover:opacity-100 transition-opacity `}>
             VARUN JOSHI
@@ -80,7 +72,6 @@ export default function Topbar({ options = true }: { options: boolean }) {
           {accountDetails && <AccountDetails />}
         </div>
         :
-
         <div className="flex items-center gap-3">
           <Button
             onClick={handleSaveCode}
@@ -97,8 +88,7 @@ export default function Topbar({ options = true }: { options: boolean }) {
             Log In
           </Button>
         </div>
-
-      }
+      )}
     </div>
   );
 }

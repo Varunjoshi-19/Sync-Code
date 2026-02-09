@@ -1,13 +1,18 @@
 "use client";
 
 import { BACKEND_URL } from "@/app/Config/endPoints";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useParams } from "next/navigation";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import toast from "react-hot-toast";
 import Loader from "../Modules/Loader";
 import { useRoomStore } from "../Store/store";
-import { GlobalContextPayload, RoomDetailsType, SettingsType, SettingType, ShareDilogBoxType } from "../Interfaces";
+import {
+    GlobalContextPayload,
+    RoomDetailsType,
+    SettingsType,
+    ShareDilogBoxType
+} from "../Interfaces";
 import ShareDialog from "../Modules/ShareDilog";
 import { roomHelper } from "../Utils/room";
 import { helper } from "../Utils";
@@ -18,16 +23,23 @@ const GlobalContext = React.createContext<GlobalContextPayload | undefined>(unde
 export const GlobalContextProvider = ({ children }: { children: React.ReactNode }) => {
 
     const socket = useMemo(() => io(BACKEND_URL, {
-        withCredentials: true
+        transports: ["websocket"],
+        withCredentials: true,
+        autoConnect: false
     }), []);
 
 
     const [loader, setLoader] = useState<boolean>(false);
-    const { setCurrentRoom, setRoomError, currentRoom, updateRoomSettings, setUser } = useRoomStore();
+    const { setCurrentRoom, setRoomError,
+        currentRoom, updateRoomSettings, setUser,
+    } = useRoomStore();
     const [shareDilog, setShareDilog] = useState<ShareDilogBoxType | null>(null);
     const [editorText, setEditorText] = useState<string>("");
     const router = useRouter();
     const pathName = usePathname();
+    const params = useParams();
+    const currentRoomId = params.roomId;
+
 
     const editorRef = useRef<any>(null);
     const isRemoteUpdate = useRef(false);
@@ -57,6 +69,8 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
         toast.success(`Room joined sucessfully ${room.roomId}`)
         const url = `/room/${room.roomId}`;
         if (pathName == url) return;
+
+        socket.emit("leave-room", { socketId: socket.id });
         router.push(url);
     }, [router, setCurrentRoom, toast]);
 
@@ -109,19 +123,37 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
 
     }, [updateRoomSettings]);
 
+    const handleSettingsFailed = ({ limit, message }: { limit: number, message: string }) => {
+        toast.error(message);
+        if (limit) {
+            updateRoomSettings({ membersLimit: limit });
+        }
+    };
+
+    const handleRoomFull = useCallback(() => {
+        toast.error("Room full !!");
+        router.push("/");
+        return;
+    }, [router]);
+
 
     useEffect(() => {
 
         socket.on("room-created", handleOnRoomCreation);
         socket.on("document-update", handleUpdateEditor);
         socket.on("room-exists", handleRoomExists);
+        socket.on("room-full", handleRoomFull);
         socket.on("updated-settings", handleSetUpdatedSettings);
+        socket.on("settings-failed", handleSettingsFailed);
 
         return () => {
             socket.off("updated-settings", handleSetUpdatedSettings);
             socket.off("room-created", handleOnRoomCreation);
             socket.off("document-update", handleUpdateEditor);
             socket.off("room-exists", handleRoomExists);
+            socket.off("room-full", handleRoomFull);
+            socket.off("settings-failed", handleSettingsFailed);
+
         }
 
     }, [socket, handleSetUpdatedSettings]);
@@ -139,9 +171,24 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
 
     useEffect(() => {
         let details = handleGetUserFromLocal() || handleGenerateCred(assignRandomName());
-        console.log('details' , details);
         setUser(details);
+
+        socket.connect();
+
+        return () => {
+            socket.disconnect();
+        };
     }, []);
+
+
+    useEffect(() => {
+        if (!currentRoomId) return;
+
+        return () => {
+            socket.emit("leave-room", { socketId: socket.id })
+        }
+    }, [currentRoomId]);
+
 
 
 

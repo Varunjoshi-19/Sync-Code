@@ -7,7 +7,7 @@ export const useRoomStore = create<RoomStore>((set) => ({
   roomError: null,
   editorText: "",
   user: null,
-  loggedIn : false,
+  loggedIn: false,
 
   selectedTheme: EditorTheme[0],
   selectedLang: defaultLangType,
@@ -16,7 +16,8 @@ export const useRoomStore = create<RoomStore>((set) => ({
   setCurrentRoom: (room) => set({ currentRoom: room }),
   setEditorText: (text) => set({ editorText: text }),
   setRoomError: (error) => set({ roomError: error }),
-  setLoggedIn : (status) => set({ loggedIn : status }),
+  setLoggedIn: (status) => set({ loggedIn: status }),
+
 
   updateRoomSettings: (settings: Settings) =>
     set((state) => ({

@@ -1,32 +1,7 @@
-export interface RoomType {
-    roomId: string;
-    roomName: string;
-    ownerId: string;
-    owner: string;
-    expirationTime: number;
-    roomTextCode: string;
-    joinedMembers: number;
-    configSettings: {
-        languageType: SupportedLangType;
-        themeType: EditorThemeType,
-        membersLimit: number;
-
-    }
-
-}
-
-export interface SupportedLangType {
-    id: string;
-    langName: string;
-    ext: string;
-}
-
-export interface EditorThemeType {
-    id: string;
-    themeName: string;
-}
+import { RoomType } from "../interface";
 
 const createdRooms = new Map<string, RoomType>();
+const trackUsersRoom  = new Map<string , string>();
 
 
-export { createdRooms }
+export { createdRooms , trackUsersRoom }

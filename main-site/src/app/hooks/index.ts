@@ -1,5 +1,6 @@
 "use client";
 
+import toast from "react-hot-toast";
 import { UseGlobalContext } from "../Context/GlobalContext";
 import { useRoomStore } from "../Store/store";
 import { helper } from "../Utils";
@@ -16,8 +17,11 @@ const useRoom = () => {
 
 
     const handleCreateRoom = () => {
-
         const details = user ?? handleGetUserFromLocal();
+        if (!details || !socket.id) {
+            toast.error("Socket Id or user details missing !!");
+            return;
+        }
         const createdRoom = handleGenerateRoom(details);
         setCurrentRoom(createdRoom);
         socket.emit("create-room", { createdRoom });

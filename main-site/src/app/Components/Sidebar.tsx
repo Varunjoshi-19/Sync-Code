@@ -5,7 +5,7 @@ import { IconButtonType, SideBarProps } from "../Interfaces";
 import useRoom from "../hooks";
 import { UseGlobalContext } from "../Context/GlobalContext";
 
-function IconButton({ icon, label, onClick, key }: IconButtonType) {
+function IconButton({ icon, label, onClick }: IconButtonType) {
 
     return (
         <div className="relative group">

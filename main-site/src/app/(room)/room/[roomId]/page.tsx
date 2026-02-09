@@ -15,7 +15,6 @@ import * as monaco from "monaco-editor"
 
 
 import { PanelInfo, SupportedLangType } from "@/app/Interfaces";
-import toast from "react-hot-toast";
 import { helper } from "@/app/Utils";
 
 
@@ -40,11 +39,19 @@ export default function RoomPage() {
 
 
     const createNewOneOrJoinThemInExisting = useCallback(() => {
-        if (!socket || !roomId) return;
+        if (!socket || !roomId) {
+            router.push("/");
+            return;
+        }
+
         const details = user ?? helper.handleGetUserFromLocal();
+        if (!details) {
+            router.push("/");
+            return;
+        }
         const createdRoom = handleGenerateRoom(details, roomId);
-        socket.emit("direct-room", { createdRoom });
-        
+        socket.emit("direct-room", { userId: details?.id, createdRoom });
+
     }, [socket, roomId]);
 
     const fetchExistingText = useCallback(async () => {
@@ -164,7 +171,7 @@ export default function RoomPage() {
 
     return (
         <div className="fixed inset-0 flex flex-col overflow-hidden">
-            <Topbar />
+            <Topbar options={true} />
 
             <div className="flex flex-1 min-h-0">
                 <div className="flex-1 min-h-0 overflow-hidden">

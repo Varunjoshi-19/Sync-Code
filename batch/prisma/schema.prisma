@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  fullName  String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  rooms     Rooms[]
+}
+
+model Rooms {
+  id             String   @id @default(uuid()) @db.Uuid
+  roomId         String   @unique
+  roomName       String
+  ownerId        String   @db.Uuid
+  owner          String
+  roomTextCode   String
+  configSettings Json
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
+  user           User     @relation(fields: [ownerId], references: [id])
+}

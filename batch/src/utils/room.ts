@@ -1,6 +1,6 @@
 import { generateRoomId } from ".";
-import { createdRooms } from "../cache/room";
-
+import { createdRooms, trackUsersRoom } from "../cache/room";
+import { RoomType } from "../interface/index";
 const listOfRooms = [
     "Chill Zone",
     "Midnight Lounge",
@@ -69,5 +69,59 @@ const generateRoomName = () => {
     return listOfRooms[index];
 }
 
-export { handleCreateRoomId, generateRoomName }
+const handleUserLeft = (socketId: string) => {
+    if (!trackUsersRoom.has(socketId)) return;
+
+    const roomId = trackUsersRoom.get(socketId);
+    if (!roomId) return;
+
+    const currentRoom = createdRooms.get(roomId);
+    if (!currentRoom) return;
+
+    currentRoom.joinedMembers = currentRoom.joinedMembers.filter(
+        (member) => member.socketId !== socketId
+    );
+
+    createdRooms.set(roomId, currentRoom);
+    trackUsersRoom.delete(socketId);
+
+};
+
+function updateRoom(roomId: string, updates: Partial<RoomType>) {
+
+    const room = createdRooms.get(roomId);
+    if (!room) return null;
+
+    const updatedRoom: RoomType = {
+        ...room,
+        ...updates,
+    };
+
+    createdRooms.set(roomId, updatedRoom);
+    return updatedRoom;
+}
+
+function updateSettings(type: string, roomId: string, updatedSettings: any): RoomType | number | null {
+    const room = createdRooms.get(roomId);
+    if (!room) return null;
+
+    if (type == "MEMBER") {
+        const existing = room.joinedMembers.length;
+        const newLimit = updatedSettings.membersLimit;
+        if (existing > newLimit) {
+            return room.configSettings.membersLimit;
+        }
+    }
+
+    const updatedRoom: RoomType = {
+        ...room,
+        configSettings: { ...room.configSettings, ...updatedSettings },
+    };
+
+    createdRooms.set(roomId, updatedRoom);
+    return updatedRoom;
+}
+
+
+export { handleCreateRoomId, handleUserLeft, generateRoomName, updateRoom, updateSettings }
 

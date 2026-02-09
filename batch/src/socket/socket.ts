@@ -1,6 +1,7 @@
 import { Server as httpServer } from "http";
 import { Socket, Server as SocketServer } from "socket.io";
 import SocketHandler from "./socket-handler";
+import { handleUserLeft } from "../utils/room";
 
 
 class SocketConnection {
@@ -19,22 +20,22 @@ class SocketConnection {
 
         this.socketModel = new SocketServer(this.httpModel, {
             cors: {
-                origin: "http://localhost:3000",
+                origin: "*",
                 methods: ["GET", "POST"],
                 credentials: true,
 
             },
             maxHttpBufferSize: 1e8,
+            transports: ["websocket"]
 
         });
 
         this.socketModel.on("connection", (socket: Socket) => {
-            this.socketModel?.to(socket.id).emit("connDetailReq");
             socketHandler.initSocketHandler(socket, this.socketModel!);
-        });
 
-        this.socketModel.on("disconnect", (socket: Socket) => {
-            socketHandler.handleWhenUserDisconnects(socket.id);
+            socket.on("disconnect", (reason) => {
+                handleUserLeft(socket.id);
+            });
         });
 
 
