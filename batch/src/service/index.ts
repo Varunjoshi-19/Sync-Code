@@ -38,17 +38,20 @@ const handleLogin = async (req: Request, res: Response) => {
             return
         }
 
-        const token = jwt.sign(
-            { userId: user.id },
-            process.env.JWT_SECRET!,
-            { expiresIn: "7d" }
-        );
+        // const token = jwt.sign(
+        //     { userId: user.id },
+        //     process.env.JWT_SECRET!,
+        //     { expiresIn: "7d" }
+        // );
+
+        const token = "v0j209j2902v2v2";
 
         res.status(200).json({
             message: "Login successful",
             token,
             user: {
                 id: user.id,
+                fullName: user.fullName,
                 email: user.email,
             },
         });

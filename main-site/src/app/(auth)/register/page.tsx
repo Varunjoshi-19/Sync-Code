@@ -2,6 +2,8 @@
 import { registrationSchema, RegisterFormData } from "../../schema/auth.schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
 
@@ -19,10 +21,30 @@ export default function RegisterForm() {
     },
   });
 
-  const onSubmit = async (data: RegisterFormData) => {
-    console.log("Signup data:", data);
+  const router = useRouter();
 
-    // call your API here
+  const onSubmit = async (data: RegisterFormData) => {
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        toast.error(result.error || "Registeration failed");
+        return;
+      }
+
+      toast.success("Registeration successfully !!");
+      router.push("/login");
+    } catch (err) {
+      console.log("Registeration error", err);
+    }
   };
 
 

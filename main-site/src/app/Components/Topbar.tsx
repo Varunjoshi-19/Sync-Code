@@ -13,7 +13,7 @@ export default function Topbar({ options = true }: { options: boolean }) {
 
 
   const { setShareDilog } = UseGlobalContext();
-  const { loggedIn } = useRoomStore();
+  const { loggedIn , user } = useRoomStore();
   const [accountDetails, setAccountDetails] = useState<boolean>(false);
   const router = useRouter();
 
@@ -67,7 +67,7 @@ export default function Topbar({ options = true }: { options: boolean }) {
             style={{ border: `2px solid ${accountDetails ? "white" : "transparent"}` }}
             className={`text-white opacity-50 cursor-pointer px-2 py-2 
         hover:opacity-100 transition-opacity `}>
-            VARUN JOSHI
+           {user?.fullName.toString().toUpperCase()}
           </span>
           {accountDetails && <AccountDetails />}
         </div>

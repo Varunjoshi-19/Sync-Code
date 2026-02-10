@@ -1,10 +1,14 @@
 "use client";
 
 import { LoginFormData, loginSchema } from "@/app/schema/auth.schema";
+import { useRoomStore } from "@/app/Store/store";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
+
   const {
     register,
     handleSubmit,
@@ -18,12 +22,38 @@ export default function LoginPage() {
     },
   });
 
-  const onSubmit = async (data: LoginFormData) => {
-    console.log("Login data ", data);
-   
-    
+  const router = useRouter();
+  const { setUser, setLoggedIn } = useRoomStore();
 
-  }
+
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        toast.error(result.error || "Login failed");
+        return;
+      }
+
+      console.log(result);
+      toast.success("Logged In successfully !!");
+      localStorage.setItem("user-detail", JSON.stringify(result.user));
+      setUser(result.user);
+      setLoggedIn(true);
+      router.push("/");
+    } catch (err) {
+      console.log("Login error", err);
+    }
+  };
+
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white">

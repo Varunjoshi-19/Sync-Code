@@ -20,7 +20,7 @@ export type RoomDetailsType = {
 };
 export interface UserInfo {
     id: string;
-    name: string;
+    fullName: string;
     email: string;
 }
 export interface Settings {

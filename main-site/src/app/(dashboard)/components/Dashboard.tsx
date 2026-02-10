@@ -6,7 +6,7 @@ import { ModalInfo, OptionType } from "@/app/Interfaces";
 import Modal from "@/app/Modules/Modal";
 import { useRoomStore } from "@/app/Store/store";
 import { useRouter } from "next/navigation";
-import { useState , useEffect } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 
@@ -14,7 +14,7 @@ import toast from "react-hot-toast";
 const Dashboard = () => {
 
   const [modalInfo, setModalInfo] = useState<ModalInfo | null>(null);
-  const { user } = useRoomStore();
+  const { user, loggedIn } = useRoomStore();
   const { socket } = UseGlobalContext();
   const { handleCreateRoom } = useRoom();
   const router = useRouter();
@@ -105,17 +105,25 @@ const Dashboard = () => {
                 CodeSync
               </span>
             </div>
-            <nav className="flex items-center gap-6 text-sm text-[#8b949e]">
-              <a href="/pricing" className="hover:text-[#e6edf3] transition-colors">
-                Pricing
-              </a>
-              <a href="/register" className="hover:text-[#e6edf3] transition-colors">
-                Sign Up
-              </a>
-              <button onClick={() => router.push("/login")} className="cursor-pointer px-4 py-2 rounded-lg bg-[#21262d] border border-[#30363d] hover:border-[#8b949e] hover:bg-[#30363d] transition-colors">
-                Log In
-              </button>
-            </nav>
+            {user && (loggedIn ?
+
+              <span className="cursor-pointer hover:opacity-50">
+                {user.fullName.toString().toUpperCase()}
+              </span>
+              :
+
+              <nav className="flex items-center gap-6 text-sm text-[#8b949e]">
+                <a href="/pricing" className="hover:text-[#e6edf3] transition-colors">
+                  Pricing
+                </a>
+                <a href="/register" className="hover:text-[#e6edf3] transition-colors">
+                  Sign Up
+                </a>
+                <button onClick={() => router.push("/login")} className="cursor-pointer px-4 py-2 rounded-lg bg-[#21262d] border border-[#30363d] hover:border-[#8b949e] hover:bg-[#30363d] transition-colors">
+                  Log In
+                </button>
+              </nav>
+            )}
           </header>
 
           <section className="text-center mb-20">
