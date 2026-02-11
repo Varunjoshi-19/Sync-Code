@@ -1,3 +1,4 @@
+import React from "react";
 import { Socket } from "socket.io-client";
 
 export type RoomDetailsType = {
@@ -11,13 +12,17 @@ export type RoomDetailsType = {
         socketId: string,
         userId: string
     }[];
-    configSettings: {
-        languageType: SupportedLangType;
-        themeType: EditorThemeType,
-        membersLimit: number;
-
-    }
+    configSettings: ConfigSettingsType
 };
+
+export interface ConfigSettingsType {
+    languageType: SupportedLangType;
+    themeType: EditorThemeType,
+    membersLimit: number;
+
+}
+
+
 export interface UserInfo {
     id: string;
     fullName: string;
@@ -64,8 +69,11 @@ export interface GlobalContextPayload {
     socket: Socket;
     editorText: string;
     editorRef: React.MutableRefObject<any>;
+    showPricingPopup: boolean;
     shareDilog: ShareDilogBoxType | null;
     setEditorText: React.Dispatch<React.SetStateAction<string>>;
+
+    setShowPricingPopup: React.Dispatch<React.SetStateAction<boolean>>;
     setShareDilog: React.Dispatch<React.SetStateAction<ShareDilogBoxType | null>>;
     setLoader: React.Dispatch<React.SetStateAction<boolean>>;
     handleEditorOnChange: (value: string) => void;

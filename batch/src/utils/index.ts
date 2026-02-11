@@ -1,5 +1,9 @@
 import crypto from "crypto";
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+const MONTHS = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+];
 
 
 const generateRoomId = (length = 6) => {
@@ -15,4 +19,15 @@ const generateRoomId = (length = 6) => {
 }
 
 
-export { generateRoomId }
+function getMonthName(monthIndex: number): string {
+    return MONTHS[monthIndex] ?? "";
+}
+
+
+function pad2(value: number): string {
+    return String(value).padStart(2, "0");
+}
+
+
+
+export { generateRoomId, getMonthName, pad2 }

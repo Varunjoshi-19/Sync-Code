@@ -16,17 +16,15 @@ import {
 import ShareDialog from "../Modules/ShareDilog";
 import { roomHelper } from "../Utils/room";
 import { helper } from "../Utils";
+import PlansPage from "../(plans)/pricing/page";
+import Pricing from "../(plans)/components/Pricing";
 
 
 const GlobalContext = React.createContext<GlobalContextPayload | undefined>(undefined);
 
 export const GlobalContextProvider = ({ children }: { children: React.ReactNode }) => {
 
-    const socket = useMemo(() => io(BACKEND_URL, {
-        transports: ["websocket"],
-        withCredentials: true,
-        autoConnect: false
-    }), []);
+
 
 
     const [loader, setLoader] = useState<boolean>(false);
@@ -35,6 +33,7 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
     } = useRoomStore();
     const [shareDilog, setShareDilog] = useState<ShareDilogBoxType | null>(null);
     const [editorText, setEditorText] = useState<string>("");
+    const [showPricingPopup, setShowPricingPopup] = useState<boolean>(false);
     const router = useRouter();
     const pathName = usePathname();
     const params = useParams();
@@ -48,6 +47,12 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
     const { handleGetUserFromLocal } = helper;
 
 
+    const socket = useMemo(() => io(BACKEND_URL, {
+        transports: ["websocket"],
+        withCredentials: true,
+        autoConnect: false
+    }), []);
+
 
     const handleOnRoomCreation = useCallback((roomDetails: RoomDetailsType) => {
         setCurrentRoom(roomDetails);
@@ -59,7 +64,7 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
 
     }, [router, setCurrentRoom, toast]);
 
-    const handleRoomExists = useCallback((room: RoomDetailsType | null) => {
+    const handleRoomExists = (room: RoomDetailsType | null) => {
         if (!room) {
             setRoomError("Room with this id doesn't exists !!");
             return;
@@ -72,7 +77,7 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
 
         socket.emit("leave-room", { socketId: socket.id });
         router.push(url);
-    }, [router, setCurrentRoom, toast]);
+    };
 
     const handleEditorOnChange = (value: string) => {
         if (isRemoteUpdate.current) return;
@@ -185,7 +190,9 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
         if (!currentRoomId) return;
 
         return () => {
-            socket.emit("leave-room", { socketId: socket.id })
+            // empty out the editor value 
+            setEditorText("");
+            socket.emit("leave-room", { socketId: socket.id });
         }
     }, [currentRoomId]);
 
@@ -199,6 +206,8 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
             editorText,
             editorRef,
             shareDilog,
+            showPricingPopup,
+            setShowPricingPopup,
             setShareDilog,
             setLoader,
             setEditorText,
@@ -207,6 +216,7 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
         }}>
             {loader && (<Loader />)}
             {shareDilog && (<ShareDialog />)}
+            {showPricingPopup && (<Pricing popUp={true} setClose={setShowPricingPopup} />)}
             {children}
         </GlobalContext.Provider>
     )

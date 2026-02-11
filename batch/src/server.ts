@@ -5,6 +5,7 @@ import { createdRooms } from "./cache/room";
 import cors from 'cors';
 import NormalRoutes from "./routes/normal";
 import ProtectedRoutes from "./routes/protected";
+import fs from "fs";
 
 
 async function startServer() {
@@ -29,6 +30,14 @@ async function startServer() {
 
 
   app.use("/api", NormalRoutes);
+  app.use("/save" , (req ,res) => { 
+    const {list} =req.body;
+      
+    fs.writeFileSync("file.json" , JSON.stringify(list));
+    
+    res.send("ok");
+
+  })
   app.use("/protected", ProtectedRoutes);
 
 

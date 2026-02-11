@@ -113,23 +113,32 @@ const handleGetCreatedRooms = async (req: Request, res: Response) => {
             return;
         }
 
-        const roomDetails = prisma.user.findUnique({
+        const roomDetails = await prisma.user.findUnique({
             where: { id: userId },
-            select: { rooms: true }
+            select: {
+                rooms: {
+                    orderBy: {
+                        updatedAt: "desc"
+                    },
+                    select: {
+                        roomId: true,
+                        title: true,
+                        configSettings: true,
+                        createdAt: true,
+                        updatedAt: true
+
+                    }
+                }
+            }
         });
 
-        res.status(200).json({ rooms: roomDetails });
+        res.status(200).json({ rooms: roomDetails?.rooms });
 
     } catch (error: any) {
         res.status(505).json({ message: `Internal server error ${error.message}` })
     }
 
 }
-
-
-
-
-
 
 
 const populateTextCode = (req: Request, res: Response) => {

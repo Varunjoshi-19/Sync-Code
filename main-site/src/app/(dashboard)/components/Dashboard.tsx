@@ -108,7 +108,7 @@ const Dashboard = () => {
             {user && (loggedIn ?
 
               <span className="cursor-pointer hover:opacity-50">
-                {user.fullName.toString().toUpperCase()}
+                {user?.fullName.toString().toUpperCase()}
               </span>
               :
 

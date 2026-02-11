@@ -18,7 +18,7 @@ class RoomHelper {
 
           const user = {
                id: this.generateRandomId(),
-               name: name,
+               fullName: name,
                email: `${sanitizedName}@codesync.com`
 
           }
@@ -35,7 +35,7 @@ class RoomHelper {
           const roomDetails: RoomDetailsType = {
                roomId: roomId,
                joinedMembers: [],
-               owner: details.name,
+               owner: details.fullName,
                ownerId: details.id,
                roomName: this.generateRoomName(),
                expirationTime: Date.now() + time24,

@@ -1,7 +1,7 @@
 import { Socket, Server } from "socket.io";
 import { RoomExistancePayload, RoomType } from "../interface/index";
 import { createdRooms, trackUsersRoom } from "../cache/room";
-import { handleUserLeft, updateRoom, updateSettings } from "../utils/room";
+import { handleUserLeft, saveCodeBaseDetails, updateRoom, updateSettings } from "../utils/room";
 import { prisma } from "../database/connection";
 
 
@@ -40,8 +40,7 @@ class SocketHandler {
 
             if (!updatedRoom) return;
             socket.to(roomId).emit("document-update", textValue);
-        }
-        );
+        });
 
         // direct from the browser URL with /room/roomId
         socket.on("direct-room", async ({ userId, createdRoom }: { userId: string, createdRoom: RoomType }) => {
@@ -96,6 +95,9 @@ class SocketHandler {
         trackUsersRoom.set(socket.id, roomId);
         socket.join(roomId);
         socket.emit("room-created", createdRoom);
+
+        // save created rooms in the db if the user exists like if id exists 
+        saveCodeBaseDetails(createdRoom);
     }
 
     handleJoinExistingRoom(userId: string, roomId: string, socketId: string, socket: Socket, socketModel: Server) {
@@ -116,10 +118,12 @@ class SocketHandler {
 
     handleCheckRoomExist = async (socketId: string, roomId: string) => {
         try {
-            const result = await prisma.rooms.findUnique({
+            const result = await prisma.rooms.update({
                 where: { roomId: roomId },
+                data: { updatedAt: new Date() },
                 include: { user: true }
             });
+
             if (!result) return null;
 
             const settings: any = result.configSettings;

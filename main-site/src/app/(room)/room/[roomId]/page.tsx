@@ -3,7 +3,7 @@
 import { UseGlobalContext } from "@/app/Context/GlobalContext";
 import { useRoomStore } from "@/app/Store/store";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
 
 import { OnMount, Editor } from "@monaco-editor/react";
 import { ApiEndPoints } from "@/app/Config/endPoints";
@@ -11,11 +11,10 @@ import { roomHelper } from "@/app/Utils/room";
 import Topbar from "@/app/Components/Topbar";
 import Sidebar from "@/app/Components/Sidebar";
 import SettingsPanel from "@/app/Components/SettingPanel";
-import * as monaco from "monaco-editor"
-
 
 import { PanelInfo, SupportedLangType } from "@/app/Interfaces";
 import { helper } from "@/app/Utils";
+import { languageList } from "@/app/constants";
 
 
 export default function RoomPage() {
@@ -27,6 +26,8 @@ export default function RoomPage() {
     const { currentRoom, user } = useRoomStore();
     const { handleGenerateRoom } = roomHelper;
     const router = useRouter();
+    const hasJoinedRoomRef = useRef(false);
+
 
     const {
         editorText,
@@ -38,7 +39,15 @@ export default function RoomPage() {
     } = UseGlobalContext();
 
 
-    const createNewOneOrJoinThemInExisting = useCallback(() => {
+    const languageType = currentRoom?.configSettings?.languageType;
+    const themeId = currentRoom?.configSettings?.themeType?.id;
+    const langId = languageType?.id;
+
+
+    const createNewOneOrJoinThemInExisting = () => {
+        if (hasJoinedRoomRef.current) return;
+        hasJoinedRoomRef.current = true;
+
         if (!socket || !roomId) {
             router.push("/");
             return;
@@ -52,7 +61,7 @@ export default function RoomPage() {
         const createdRoom = handleGenerateRoom(details, roomId);
         socket.emit("direct-room", { userId: details?.id, createdRoom });
 
-    }, [socket, roomId]);
+    };
 
     const fetchExistingText = useCallback(async () => {
         try {
@@ -73,21 +82,19 @@ export default function RoomPage() {
         }
     }, [roomId, currentRoom, handleUpdateEditor]);
 
-    const validateRoomExistance = useCallback(() => {
+    const validateRoomExistance = () => {
         if (!roomId) {
             router.push("/");
             return;
         }
 
-        if (!currentRoom) {
+        if (!currentRoom || currentRoom.roomId !== roomId) {
             createNewOneOrJoinThemInExisting();
             return;
         }
 
-        if (currentRoom.roomId !== roomId) {
-            router.push("/");
-        }
-    }, [roomId]);
+
+    }
 
     const handleEditorDidMount: OnMount = (editor) => {
         editorRef.current = editor;
@@ -95,8 +102,7 @@ export default function RoomPage() {
         fetchExistingText();
     };
 
-    const getCurrentLanguage = () => {
-        const languageList = monaco.languages.getLanguages();
+    const getCurrentLanguage = async () => {
         const extractedData = languageList.map((each) => {
             return { id: each.id, langName: each.aliases?.[0] ?? "", ext: each.extensions?.[0] ?? "" }
         });
@@ -106,7 +112,7 @@ export default function RoomPage() {
     const handleDownloadFile = () => {
         if (!editorText.trim()) return;
 
-        const extension = languageType.ext.trim();
+        const extension = languageType?.ext.trim();
         const fileName = `${Date.now()}${extension}`;
 
         const blob = new Blob([editorText], { type: "text/plain" });
@@ -151,7 +157,7 @@ export default function RoomPage() {
 
     useEffect(() => {
         validateRoomExistance();
-    }, [validateRoomExistance]);
+    }, []);
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -164,9 +170,11 @@ export default function RoomPage() {
 
 
 
-    if (!currentRoom) return null;
-    const { configSettings: { languageType, themeType: { id: themeId } } } = currentRoom;
-    const { id: langId } = languageType;
+
+
+    if (!currentRoom || !languageType || !themeId || !langId) {
+        return null;
+    }
 
 
     return (

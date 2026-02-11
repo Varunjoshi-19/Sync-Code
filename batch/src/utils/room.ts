@@ -1,6 +1,9 @@
 import { generateRoomId } from ".";
 import { createdRooms, trackUsersRoom } from "../cache/room";
+import { prisma } from "../database/connection";
 import { RoomType } from "../interface/index";
+import { getMonthName, pad2 } from "./index";
+
 const listOfRooms = [
     "Chill Zone",
     "Midnight Lounge",
@@ -85,7 +88,82 @@ const handleUserLeft = (socketId: string) => {
     createdRooms.set(roomId, currentRoom);
     trackUsersRoom.delete(socketId);
 
+    CaptureRoomSnapShot(currentRoom);
+
 };
+
+const saveCodeBaseDetails = async (createdRoom: RoomType) => {
+    try {
+        const { roomId, roomName, owner, roomTextCode, ownerId, configSettings } = createdRoom;
+
+        const user = await prisma.user.findUnique({
+            where: { id: ownerId }
+        });
+
+        if (!user) {
+            console.log("user not eixsts")
+            return false;
+        }
+
+        const title: string = createdTitle(Date.now());
+
+        const roomData: any = {
+            title: title,
+            roomId,
+            roomName,
+            ownerId,
+            owner,
+            roomTextCode,
+            configSettings,
+        }
+
+        await prisma.rooms.create({
+            data: roomData,
+            include: { user: true }
+
+        });
+
+        return true;
+
+    } catch (error: any) {
+        console.log("error", error.message);
+        return false;
+    }
+
+}
+
+const CaptureRoomSnapShot = async (currentRoom: RoomType) => {
+    try {
+        const { roomId, configSettings, roomTextCode } = currentRoom;
+        await prisma.rooms.update({
+            where: { roomId: roomId },
+            data: {
+                configSettings: configSettings as any,
+                roomTextCode,
+                updatedAt: new Date(Date.now())
+            }
+        });
+
+        console.log("Captured Snapshot !!!", roomId);
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+function createdTitle(time: number): string {
+    const now = new Date(time);
+
+    const monthName = getMonthName(now.getMonth());
+    const date = pad2(now.getDate());
+    const hours12 = now.getHours() % 12 || 12;
+    const hours = hours12?.toString().padStart(2, "0");
+    const minutes = pad2(now.getMinutes());
+
+    const format = now.getHours() >= 12 ? "PM" : "AM";
+
+    return `${monthName} ${date} ${hours}:${minutes} ${format}`;
+}
 
 function updateRoom(roomId: string, updates: Partial<RoomType>) {
 
@@ -123,5 +201,13 @@ function updateSettings(type: string, roomId: string, updatedSettings: any): Roo
 }
 
 
-export { handleCreateRoomId, handleUserLeft, generateRoomName, updateRoom, updateSettings }
+
+export {
+    handleCreateRoomId,
+    handleUserLeft,
+    generateRoomName,
+    updateRoom,
+    updateSettings,
+    saveCodeBaseDetails
+}
 

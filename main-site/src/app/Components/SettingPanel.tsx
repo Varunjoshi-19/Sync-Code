@@ -11,6 +11,11 @@ function SettingsPanel({ sidePanelInfo, onClose, supportedLanguage }: SettingPan
     const { currentRoom, updateRoomSettings, user } = useRoomStore();
     const { isOpen, type } = sidePanelInfo;
 
+    const languageType = currentRoom?.configSettings?.languageType;
+    const themeId = currentRoom?.configSettings?.themeType?.id;
+    const langId = languageType?.id;
+    const membersLimit = currentRoom?.configSettings.membersLimit;
+
     const handleSelectSyntax = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const currentId = e.target.value;
         const modal = supportedLanguage.find((each) => String(each.id) === String(currentId));
@@ -57,9 +62,11 @@ function SettingsPanel({ sidePanelInfo, onClose, supportedLanguage }: SettingPan
     }
 
 
-    if (!type || !currentRoom || !user) return null;
+    if (!currentRoom || !languageType || !themeId || !langId || !membersLimit) {
+        return null;
+    }
 
-    const { configSettings: { languageType: { id: langId }, themeType: { id: themeId }, membersLimit } } = currentRoom;
+
 
     return (
         <div

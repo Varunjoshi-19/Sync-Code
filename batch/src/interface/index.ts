@@ -9,12 +9,14 @@ export interface RoomType {
         socketId: string;
         userId: string;
     }[];
-    configSettings: {
-        languageType: SupportedLangType;
-        themeType: EditorThemeType,
-        membersLimit: number;
+    configSettings: ConfigSettingsType;
 
-    }
+}
+
+export interface ConfigSettingsType {
+    languageType: SupportedLangType;
+    themeType: EditorThemeType,
+    membersLimit: number;
 
 }
 
