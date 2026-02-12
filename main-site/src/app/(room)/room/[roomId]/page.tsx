@@ -15,6 +15,7 @@ import SettingsPanel from "@/app/Components/SettingPanel";
 import { PanelInfo, SupportedLangType } from "@/app/Interfaces";
 import { helper } from "@/app/Utils";
 import { languageList } from "@/app/constants";
+import { useGlobalStore } from "@/app/Store";
 
 
 export default function RoomPage() {
@@ -30,13 +31,13 @@ export default function RoomPage() {
 
 
     const {
-        editorText,
         editorRef,
         socket,
-        setLoader,
         handleEditorOnChange,
         handleUpdateEditor,
     } = UseGlobalContext();
+
+    const { editorText, setLoader } = useGlobalStore();
 
 
     const languageType = currentRoom?.configSettings?.languageType;

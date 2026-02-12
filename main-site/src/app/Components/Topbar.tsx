@@ -2,12 +2,13 @@
 
 import { Code2, Users, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { UseGlobalContext } from "../Context/GlobalContext";
 import { useRouter } from "next/navigation";
 import { useRoomStore } from "../Store/store";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useRoom from "../hooks";
+import { useGlobalStore } from "../Store";
+import socket from "../hooks/socket";
 
 type MenuItem =
   | { title: string; link: string; callback?: never }
@@ -16,10 +17,11 @@ type MenuItem =
 export default function Topbar({ options = true, upgrade = false }: { options: boolean, upgrade?: boolean }) {
 
 
-  const { setShareDilog, setShowPricingPopup } = UseGlobalContext();
-  const { loggedIn, user, setEditorText } = useRoomStore();
-  const { handleCreateRoom } = useRoom();
+  const { loggedIn, user } = useRoomStore();
+  const { setShareDilog, setShowPricingPopup, setLoader, setEditorText } = useGlobalStore();
+  const { handleCreateRoom } = useRoom({ socket, setLoader });
   const [accountDetails, setAccountDetails] = useState<boolean>(false);
+  const [mounted, setMounted] = useState<boolean>(false);
   const router = useRouter();
 
   const handleShare = () => {
@@ -30,7 +32,7 @@ export default function Topbar({ options = true, upgrade = false }: { options: b
   }
 
   const handleLogout = () => {
-      
+
   }
 
   const handleSaveCode = () => {
@@ -81,6 +83,12 @@ export default function Topbar({ options = true, upgrade = false }: { options: b
     );
   };
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
 
     <div className="w-full flex items-center justify-between px-3 py-2 bg-[#30353E] border-b border-slate-800">
@@ -108,7 +116,7 @@ export default function Topbar({ options = true, upgrade = false }: { options: b
               style={{ border: `2px solid ${accountDetails ? "white" : "transparent"}` }}
               className={`text-white opacity-50 cursor-pointer px-2 py-2 
         hover:opacity-100 transition-opacity `}>
-              {user?.fullName.toString().toUpperCase()}
+              {user?.fullName?.toString().toUpperCase()}
             </span>
             {accountDetails && <AccountDetails />}
           </div>

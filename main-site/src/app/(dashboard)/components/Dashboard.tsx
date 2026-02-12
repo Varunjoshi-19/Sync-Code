@@ -1,28 +1,28 @@
 "use client";
 
-import { UseGlobalContext } from "@/app/Context/GlobalContext";
 import useRoom from "@/app/hooks";
 import { ModalInfo, OptionType } from "@/app/Interfaces";
 import Modal from "@/app/Modules/Modal";
+import { useGlobalStore } from "@/app/Store";
 import { useRoomStore } from "@/app/Store/store";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import socket from "@/app/hooks/socket";
 
 
 
 const Dashboard = () => {
 
   const [modalInfo, setModalInfo] = useState<ModalInfo | null>(null);
+  const { setLoader } = useGlobalStore();
   const { user, loggedIn } = useRoomStore();
-  const { socket } = UseGlobalContext();
-  const { handleCreateRoom } = useRoom();
+  const { handleCreateRoom } = useRoom({ socket, setLoader });
   const router = useRouter();
 
 
   const handleJoinRoom = (roomId: string) => {
     if (!socket || !user) {
-      alert(`${user} ${socket.id}`)
       toast.error("Failed to Join socket Id or User Id missing !!");
       return;
     }
@@ -227,5 +227,19 @@ const Dashboard = () => {
 
   );
 };
+
+// const Dashboard = () => {
+
+//   const [modalInfo, setModalInfo] = useState<ModalInfo | null>(null);
+//   const { user, loggedIn } = useRoomStore();
+//   // const { socket } = UseGlobalContext();  
+//   // const { setLoader } = useGlobalStore();
+//   const { handleCreateRoom } = useRoom({ socket : "", setLoader: () => { } });
+//   const router = useRouter();
+
+//   return (<div>
+//     Dashboard
+//   </div>)
+// }
 
 export default Dashboard;

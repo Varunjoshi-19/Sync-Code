@@ -31,7 +31,6 @@ export interface EditorThemeType {
     themeName: string;
 }
 
-
 export interface RoomExistancePayload {
 
     userId: string;

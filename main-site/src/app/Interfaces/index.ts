@@ -22,6 +22,10 @@ export interface ConfigSettingsType {
 
 }
 
+export interface LayoutType {
+    children: React.ReactNode
+}
+
 
 export interface UserInfo {
     id: string;
@@ -38,15 +42,13 @@ export type RoomStore = {
     user: UserInfo | null,
     currentRoom: RoomDetailsType | null;
     roomError: string | null;
-    editorText: string;
     loggedIn: boolean;
 
 
     setLoggedIn: (status: boolean) => void;
     setCurrentRoom: (room: RoomDetailsType) => void;
-    setEditorText: (text: string) => void;
     setRoomError: (error: string | null) => void;
-    setUser: (user: UserInfo) => void;
+    setUser: (user: UserInfo | null) => void;
     clearRoom: () => void;
     updateRoomSettings: (settings: Settings) => void;
 
@@ -67,15 +69,7 @@ export interface ModalTypes {
 }
 export interface GlobalContextPayload {
     socket: Socket;
-    editorText: string;
     editorRef: React.MutableRefObject<any>;
-    showPricingPopup: boolean;
-    shareDilog: ShareDilogBoxType | null;
-    setEditorText: React.Dispatch<React.SetStateAction<string>>;
-
-    setShowPricingPopup: React.Dispatch<React.SetStateAction<boolean>>;
-    setShareDilog: React.Dispatch<React.SetStateAction<ShareDilogBoxType | null>>;
-    setLoader: React.Dispatch<React.SetStateAction<boolean>>;
     handleEditorOnChange: (value: string) => void;
     handleUpdateEditor: (incommingText: string) => void;
 

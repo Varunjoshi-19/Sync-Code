@@ -1,8 +1,5 @@
-import Topbar from "../Components/Topbar"
-
-interface LayoutType {
-    children: React.ReactNode
-}
+import Topbar from "../Components/Topbar";
+import { LayoutType } from "../Interfaces";
 
 export default function OtherLayout({ children }: LayoutType) {
     return (

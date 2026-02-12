@@ -10,6 +10,8 @@ import { helper } from "@/app/Utils";
 import Loader from "@/app/Components/Loader";
 import { useNow } from "@/app/hooks/now";
 import useRoom from "@/app/hooks";
+import { UseGlobalContext } from "@/app/Context/GlobalContext";
+import { useGlobalStore } from "@/app/Store";
 
 interface Code {
   roomId: string;
@@ -22,8 +24,10 @@ interface Code {
 
 export default function Codes() {
 
-  const { user, setEditorText } = useRoomStore();
-  const { handleCreateRoom } = useRoom();
+  const { socket } = UseGlobalContext();
+  const { setLoader, setEditorText } = useGlobalStore();
+  const { user } = useRoomStore();
+  const { handleCreateRoom } = useRoom({ socket, setLoader });
   const [fetching, setFetching] = useState<boolean>(true);
   const [allRooms, setAllRooms] = useState<Code[]>([]);
 
@@ -91,7 +95,7 @@ export default function Codes() {
           className="bg-emerald-400 cursor-pointer
            hover:bg-emerald-600 text-white px-5 
            py-2 rounded-md text-sm font-medium transition"
-        
+
         >
           New CodeSync
         </button>

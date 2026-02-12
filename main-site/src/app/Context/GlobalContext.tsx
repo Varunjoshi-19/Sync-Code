@@ -2,7 +2,7 @@
 
 import { BACKEND_URL } from "@/app/Config/endPoints";
 import { useRouter, usePathname, useParams } from "next/navigation";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { io } from "socket.io-client";
 import toast from "react-hot-toast";
 import Loader from "../Modules/Loader";
@@ -11,29 +11,26 @@ import {
     GlobalContextPayload,
     RoomDetailsType,
     SettingsType,
-    ShareDilogBoxType
 } from "../Interfaces";
 import ShareDialog from "../Modules/ShareDilog";
 import { roomHelper } from "../Utils/room";
 import { helper } from "../Utils";
-import PlansPage from "../(plans)/pricing/page";
 import Pricing from "../(plans)/components/Pricing";
-
+import { useGlobalStore } from "../Store";
+import socket from "../hooks/socket";
 
 const GlobalContext = React.createContext<GlobalContextPayload | undefined>(undefined);
 
 export const GlobalContextProvider = ({ children }: { children: React.ReactNode }) => {
 
 
-
-
-    const [loader, setLoader] = useState<boolean>(false);
     const { setCurrentRoom, setRoomError,
         currentRoom, updateRoomSettings, setUser,
     } = useRoomStore();
-    const [shareDilog, setShareDilog] = useState<ShareDilogBoxType | null>(null);
-    const [editorText, setEditorText] = useState<string>("");
-    const [showPricingPopup, setShowPricingPopup] = useState<boolean>(false);
+
+    const { loader, shareDilog, showPricingPopup,
+        setLoader, setEditorText, setShowPricingPopup } = useGlobalStore();
+
     const router = useRouter();
     const pathName = usePathname();
     const params = useParams();
@@ -47,14 +44,8 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
     const { handleGetUserFromLocal } = helper;
 
 
-    const socket = useMemo(() => io(BACKEND_URL, {
-        transports: ["websocket"],
-        withCredentials: true,
-        autoConnect: false
-    }), []);
 
-
-    const handleOnRoomCreation = useCallback((roomDetails: RoomDetailsType) => {
+    const handleOnRoomCreation = (roomDetails: RoomDetailsType) => {
         setCurrentRoom(roomDetails);
         toast.success(`Room created ${roomDetails.roomId}`);
         const url = `/room/${roomDetails.roomId}`;
@@ -62,7 +53,7 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
 
         router.push(url);
 
-    }, [router, setCurrentRoom, toast]);
+    }
 
     const handleRoomExists = (room: RoomDetailsType | null) => {
         if (!room) {
@@ -110,7 +101,7 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
 
     }
 
-    const handleSetUpdatedSettings = useCallback(({ type, updatedSettings }: { type: string; updatedSettings: any }) => {
+    const handleSetUpdatedSettings = ({ type, updatedSettings }: { type: string; updatedSettings: any }) => {
 
         switch (type) {
             case SettingsType.LANG:
@@ -126,7 +117,7 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
                 break;
         }
 
-    }, [updateRoomSettings]);
+    }
 
     const handleSettingsFailed = ({ limit, message }: { limit: number, message: string }) => {
         toast.error(message);
@@ -135,12 +126,11 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
         }
     };
 
-    const handleRoomFull = useCallback(() => {
+    const handleRoomFull = () => {
         toast.error("Room full !!");
         router.push("/");
         return;
-    }, [router]);
-
+    }
 
     useEffect(() => {
 
@@ -203,14 +193,7 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
     return (
         <GlobalContext.Provider value={{
             socket,
-            editorText,
             editorRef,
-            shareDilog,
-            showPricingPopup,
-            setShowPricingPopup,
-            setShareDilog,
-            setLoader,
-            setEditorText,
             handleEditorOnChange,
             handleUpdateEditor,
         }}>

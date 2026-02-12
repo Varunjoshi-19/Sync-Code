@@ -3,7 +3,8 @@
 import { Settings, Download, Plus, Info } from "lucide-react";
 import { IconButtonType, SideBarProps } from "../Interfaces";
 import useRoom from "../hooks";
-import { UseGlobalContext } from "../Context/GlobalContext";
+import { useGlobalStore } from "../Store";
+import socket from "../hooks/socket";
 
 function IconButton({ icon, label, onClick }: IconButtonType) {
 
@@ -31,8 +32,8 @@ function IconButton({ icon, label, onClick }: IconButtonType) {
 
 export default function Sidebar({ onSettings, onDownload, onInfo }: SideBarProps) {
 
-    const { handleCreateRoom } = useRoom();
-    const { setEditorText } = UseGlobalContext();
+    const { setEditorText, setLoader } = useGlobalStore();
+    const { handleCreateRoom } = useRoom({ socket, setLoader });
 
     const createRoom = () => {
         setEditorText("");

@@ -1,9 +1,5 @@
+import { LayoutType } from "../Interfaces"
 import Topbar from "../Components/Topbar"
-
-interface LayoutType { 
-    children : React.ReactNode
-}
-
 export default function  Layout({children} : LayoutType) {
      return(
         <>

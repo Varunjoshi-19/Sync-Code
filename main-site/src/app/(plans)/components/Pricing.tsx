@@ -1,9 +1,8 @@
 import { CircleQuestionMark, X } from "lucide-react";
-import React from "react";
 
 interface PricingProps {
     popUp?: boolean;
-    setClose?: React.Dispatch<React.SetStateAction<boolean>>;
+    setClose?: (status : boolean) => void;
 }
 
 export default function Pricing({ popUp = false, setClose }: PricingProps) {
