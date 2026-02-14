@@ -1,8 +1,5 @@
-import dynamic from "next/dynamic"
 import { LayoutType } from "../Interfaces"
-const Topbar = dynamic(() => import("../Components/Topbar"), {
-    ssr: false,
-})
+import Topbar from "../Components/Topbar";
 
 export default function PlansLayout({ children }: LayoutType) {
     return (
