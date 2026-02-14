@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import socket from "@/app/hooks/socket";
+import AccountDetails from "@/app/Modules/AccountDetails";
 
 
 
@@ -17,6 +18,7 @@ const Dashboard = () => {
   const [modalInfo, setModalInfo] = useState<ModalInfo | null>(null);
   const { setLoader } = useGlobalStore();
   const { user, loggedIn } = useRoomStore();
+  const [accountDetails, setAccountDetails] = useState<boolean>(false);
   const { handleCreateRoom } = useRoom({ socket, setLoader });
   const router = useRouter();
 
@@ -105,25 +107,36 @@ const Dashboard = () => {
                 CodeSync
               </span>
             </div>
-            {user && (loggedIn ?
 
-              <span className="cursor-pointer hover:opacity-50">
-                {user?.fullName.toString().toUpperCase()}
-              </span>
-              :
+            <div className="flex items-center gap-3">
 
-              <nav className="flex items-center gap-6 text-sm text-[#8b949e]">
-                <a href="/pricing" className="hover:text-[#e6edf3] transition-colors">
-                  Pricing
-                </a>
-                <a href="/register" className="hover:text-[#e6edf3] transition-colors">
-                  Sign Up
-                </a>
-                <button onClick={() => router.push("/login")} className="cursor-pointer px-4 py-2 rounded-lg bg-[#21262d] border border-[#30363d] hover:border-[#8b949e] hover:bg-[#30363d] transition-colors">
-                  Log In
-                </button>
-              </nav>
-            )}
+              <a href="/pricing" className="hover:text-[#e6edf3] transition-colors">
+                Pricing
+              </a>
+
+              {loggedIn ?
+                <div className="relative">
+                  <span
+                    onClick={() => setAccountDetails(prev => !prev)}
+                    style={{ border: `2px solid ${accountDetails ? "white" : "transparent"}` }}
+                    className={`text-white opacity-50 cursor-pointer px-2 py-2 
+        hover:opacity-100 transition-opacity `}>
+                    {user?.fullName?.toString().toUpperCase()}
+                  </span>
+                  {accountDetails && <AccountDetails />}
+                </div>
+                :
+                <nav className="flex items-center gap-6 text-sm text-[#8b949e]">
+
+                  <a href="/register" className="hover:text-[#e6edf3] transition-colors">
+                    Sign Up
+                  </a>
+                  <button onClick={() => router.push("/login")} className="cursor-pointer px-4 py-2 rounded-lg bg-[#21262d] border border-[#30363d] hover:border-[#8b949e] hover:bg-[#30363d] transition-colors">
+                    Log In
+                  </button>
+                </nav>
+              }
+            </div>
           </header>
 
           <section className="text-center mb-20">
@@ -228,18 +241,5 @@ const Dashboard = () => {
   );
 };
 
-// const Dashboard = () => {
-
-//   const [modalInfo, setModalInfo] = useState<ModalInfo | null>(null);
-//   const { user, loggedIn } = useRoomStore();
-//   // const { socket } = UseGlobalContext();  
-//   // const { setLoader } = useGlobalStore();
-//   const { handleCreateRoom } = useRoom({ socket : "", setLoader: () => { } });
-//   const router = useRouter();
-
-//   return (<div>
-//     Dashboard
-//   </div>)
-// }
 
 export default Dashboard;

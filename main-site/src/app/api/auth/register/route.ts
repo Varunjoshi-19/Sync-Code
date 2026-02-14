@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { SignJWT } from "jose";
 import { registrationSchema } from "../../../schema/auth.schema";
 import { ApiEndPoints } from "@/app/Config/endPoints";
 

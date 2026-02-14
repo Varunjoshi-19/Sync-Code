@@ -99,6 +99,13 @@ export default function RoomPage() {
 
     const handleEditorDidMount: OnMount = (editor) => {
         editorRef.current = editor;
+        editor.onDidChangeCursorSelection((e) => {
+            socket.emit("cursor-move", {
+                socketId: socket.id,
+                selection: e.selection,
+                roomId: roomId
+            });
+        });
         getCurrentLanguage();
         fetchExistingText();
     };

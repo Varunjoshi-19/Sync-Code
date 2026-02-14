@@ -3,6 +3,8 @@ import { createdRooms, trackUsersRoom } from "../cache/room";
 import { prisma } from "../database/connection";
 import { RoomType } from "../interface/index";
 import { getMonthName, pad2 } from "./index";
+import { Socket } from "socket.io";
+
 
 const listOfRooms = [
     "Chill Zone",
@@ -72,7 +74,7 @@ const generateRoomName = () => {
     return listOfRooms[index];
 }
 
-const handleUserLeft = (socketId: string) => {
+const handleUserLeft = (socket: Socket, socketId: string) => {
     if (!trackUsersRoom.has(socketId)) return;
 
     const roomId = trackUsersRoom.get(socketId);
@@ -87,6 +89,7 @@ const handleUserLeft = (socketId: string) => {
 
     createdRooms.set(roomId, currentRoom);
     trackUsersRoom.delete(socketId);
+    socket.to(roomId).emit("user-left", { socketId: socket.id });
 
     CaptureRoomSnapShot(currentRoom);
 
@@ -101,7 +104,6 @@ const saveCodeBaseDetails = async (createdRoom: RoomType) => {
         });
 
         if (!user) {
-            console.log("user not eixsts")
             return false;
         }
 
@@ -144,7 +146,6 @@ const CaptureRoomSnapShot = async (currentRoom: RoomType) => {
             }
         });
 
-        console.log("Captured Snapshot !!!", roomId);
 
     } catch (error) {
         console.log(error);

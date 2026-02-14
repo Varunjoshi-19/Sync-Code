@@ -84,7 +84,12 @@ class SocketHandler {
             socket.to(roomId).emit("updated-settings", { type, updatedSettings });
         });
 
-        socket.on("leave-room", ({ socketId }) => handleUserLeft(socketId));
+        socket.on("cursor-move", ({ socketId, selection, roomId }: { socketId: string, selection: any, roomId: string }) => {
+
+            socket.to(roomId).emit("cursor-move", { socketId, selection });
+        });
+
+        socket.on("leave-room", ({ socketId }) => handleUserLeft(socket, socketId));
 
     }
 

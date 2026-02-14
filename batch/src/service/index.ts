@@ -1,18 +1,18 @@
 import { Request, Response } from "express"
 import { createdRooms } from "../cache/room"
 import bcrypt from "bcryptjs";
-import { prisma } from "../database/connection"
+import { prisma } from "../database/connection";
 import jwt from "jsonwebtoken";
+import { config } from "../config";
 
 const handleLogin = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: "Email and password are required",
             });
-            return;
         }
 
         const user = await prisma.user.findUnique({
@@ -20,10 +20,9 @@ const handleLogin = async (req: Request, res: Response) => {
         });
 
         if (!user) {
-            res.status(401).json({
+            return res.status(401).json({
                 message: "Invalid credentials",
             });
-            return;
         }
 
         const isPasswordValid = await bcrypt.compare(
@@ -32,39 +31,85 @@ const handleLogin = async (req: Request, res: Response) => {
         );
 
         if (!isPasswordValid) {
-            res.status(401).json({
+            return res.status(401).json({
                 message: "Invalid credentials",
             });
-            return
         }
 
-        // const token = jwt.sign(
-        //     { userId: user.id },
-        //     process.env.JWT_SECRET!,
-        //     { expiresIn: "7d" }
-        // );
+        if (!process.env.JWT_SECRET || !process.env.JWT_REFRESH_SECRET) {
+            throw new Error("JWT secrets missing");
+        }
 
-        const token = "v0j209j2902v2v2";
 
-        res.status(200).json({
-            message: "Login successful",
-            token,
+
+        const accessToken = jwt.sign(
+            { userId: user.id, email: user.email },
+            config.accessKey,
+            { expiresIn: "10m" }
+        );
+
+        const refreshToken = jwt.sign(
+            { userId: user.id },
+            config.refreshKey,
+            { expiresIn: "7d" }
+        );
+
+        console.log("token" , accessToken , refreshToken);
+
+        res.cookie("access-token", accessToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            maxAge: 10 * 60 * 1000,
+            path: "/"
+        });
+
+        res.cookie("refresh-token", refreshToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            path: "/"
+        });
+
+
+        return res.status(200).json({
             user: {
                 id: user.id,
                 fullName: user.fullName,
                 email: user.email,
             },
         });
-        return;
 
     } catch (error) {
         console.error("Login error:", error);
-        res.status(500).json({
+        return res.status(500).json({
             message: "Internal server error",
         });
-        return;
     }
 };
+
+const handleLogout = async (req: Request, res: Response) => {
+
+    res.cookie("access-token", "", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        expires: new Date(0),
+        path: "/",
+    });
+
+    res.cookie("refresh-token", "", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        expires: new Date(0),
+        path: "/",
+    });
+
+    res.status(200).json({ message: "Logged out successfully" });
+
+}
 
 const handleRegister = async (req: Request, res: Response) => {
 
@@ -140,7 +185,6 @@ const handleGetCreatedRooms = async (req: Request, res: Response) => {
 
 }
 
-
 const populateTextCode = (req: Request, res: Response) => {
     {
         const roomId = typeof req.params.roomId == "string" ? req.params.roomId : "";
@@ -164,8 +208,12 @@ const populateTextCode = (req: Request, res: Response) => {
 }
 
 
+
+
+
 export {
     handleLogin,
+    handleLogout,
     handleRegister,
     populateTextCode,
     handleGetCreatedRooms

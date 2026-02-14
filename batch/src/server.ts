@@ -1,43 +1,38 @@
-import express from "express";
-import http, { Server } from "http";
-import SocketConnection from "./socket/socket";
-import { createdRooms } from "./cache/room";
-import cors from 'cors';
-import NormalRoutes from "./routes/normal";
 import ProtectedRoutes from "./routes/protected";
-import fs from "fs";
-
+import SocketConnection from "./socket/socket";
+import NormalRoutes from "./routes/normal";
+import cookieParser from "cookie-parser";
+import http, { Server } from "http";
+import express from "express";
+import dotenv from "dotenv"
+import cors from 'cors';
 
 async function startServer() {
+
+  dotenv.config();
   const app = express();
 
   const PORT = process.env.PORT || 4000;
   const networkPort: any = "0.0.0.0";
 
-  app.use(express.json());
+  const allowedOrigins = [process.env.ALLOWED_ORIGIN || "http://localhost:3000", "http://192.168.1.4:3000"];
 
   app.use(cors({
-    origin: "*",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true,
   }));
 
+
+  app.use(express.json());
+  app.use(cookieParser());
 
   const server: Server = http.createServer(app);
   const socket = new SocketConnection();
   socket.establishConnection(server);
 
 
-
   app.use("/api", NormalRoutes);
-  app.use("/save" , (req ,res) => { 
-    const {list} =req.body;
-      
-    fs.writeFileSync("file.json" , JSON.stringify(list));
-    
-    res.send("ok");
-
-  })
   app.use("/protected", ProtectedRoutes);
 
 

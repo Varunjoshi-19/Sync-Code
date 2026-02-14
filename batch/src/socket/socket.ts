@@ -20,7 +20,7 @@ class SocketConnection {
 
         this.socketModel = new SocketServer(this.httpModel, {
             cors: {
-                origin: "*",
+                origin: ["http://localhost:3000", "http://192.168.1.4:3000"],
                 methods: ["GET", "POST"],
                 credentials: true,
 
@@ -34,7 +34,8 @@ class SocketConnection {
             socketHandler.initSocketHandler(socket, this.socketModel!);
 
             socket.on("disconnect", (reason) => {
-                handleUserLeft(socket.id);
+                console.log("Reason" , reason);
+                handleUserLeft(socket , socket.id);
             });
         });
 

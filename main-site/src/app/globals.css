@@ -132,6 +132,10 @@ body {
   height: 100vh;
 }
 
-br {
-  color: #8a8a8ab3;
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+br  {
+   color : #4d4d4da3;
 }

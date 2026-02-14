@@ -42,7 +42,6 @@ export default function Codes() {
       }
 
       const data = await res.json();
-      console.log("Rooms:", data.rooms);
 
       if (res.ok) {
         setAllRooms(data.rooms);

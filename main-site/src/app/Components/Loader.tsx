@@ -1,8 +1,8 @@
 import React from "react";
 
 type LoaderProps = {
-  size?: number;        // px
-  fullScreen?: boolean; // center on full screen
+  size?: number;        
+  fullScreen?: boolean; 
 };
 
 const Loader: React.FC<LoaderProps> = ({ size = 40, fullScreen = false }) => {
