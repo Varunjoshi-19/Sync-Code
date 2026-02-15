@@ -54,11 +54,11 @@ const handleLogin = async (req: Request, res: Response) => {
             { expiresIn: "7d" }
         );
 
-        console.log("token" , accessToken , refreshToken);
+        console.log("token", accessToken, refreshToken);
 
         res.cookie("access-token", accessToken, {
             httpOnly: true,
-            secure: false,
+            secure: true,
             sameSite: "lax",
             maxAge: 10 * 60 * 1000,
             path: "/"
@@ -66,7 +66,7 @@ const handleLogin = async (req: Request, res: Response) => {
 
         res.cookie("refresh-token", refreshToken, {
             httpOnly: true,
-            secure: false,
+            secure: true,
             sameSite: "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000,
             path: "/"
