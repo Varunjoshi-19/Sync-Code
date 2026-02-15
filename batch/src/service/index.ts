@@ -55,7 +55,7 @@ const handleLogin = async (req: Request, res: Response) => {
         );
 
 
-        const isProduction = process.env.NODE_ENV === "production";
+        const isProduction = process.env.ENVIRONMENT === "production";
 
         res.cookie("access-token", accessToken, {
             httpOnly: true,
