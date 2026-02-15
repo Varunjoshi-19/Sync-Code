@@ -1,10 +1,11 @@
+import { ApiEndPoints } from "@/app/Config/endPoints";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
 
-        const backendRes = await fetch(`${process.env.BACKEND_URL}/auth/login`, {
+        const backendRes = await fetch(ApiEndPoints.login, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

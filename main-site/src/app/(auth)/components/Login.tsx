@@ -30,7 +30,7 @@ export default function Login({ dilogBox = false, setClose }: { dilogBox?: boole
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const res = await fetch(ApiEndPoints.login, {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,15 +52,16 @@ export default function Login({ dilogBox = false, setClose }: { dilogBox?: boole
         email: result.user.email,
       };
 
-      toast.success("Logged In successfully !!");
+      toast.success("Logged in successfully!");
       setUser(userInfo);
       setLoggedIn(true);
-      if(!dilogBox) {
+
+      if (!dilogBox) {
         router.push("/");
       }
-      if(setClose) setClose(false);
+      if (setClose) setClose(false);
     } catch (err) {
-      console.log("Login error", err);
+      console.error("Login error", err);
     }
   };
 
@@ -78,7 +79,7 @@ export default function Login({ dilogBox = false, setClose }: { dilogBox?: boole
       }}
     >
       <div
-      onClick={(e) => e.stopPropagation() }
+        onClick={(e) => e.stopPropagation()}
         className={
           dilogBox
             ? "bg-white p-6 rounded-lg shadow-lg w-full max-w-md"
