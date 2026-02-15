@@ -10,13 +10,19 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
+    "baseUrl": ".", 
+    "paths": {
+      "*": ["node_modules/*", "src/generated/*"]
+    },
     "types": [
       "node"
     ]
   },
-
-
   "include": [
     "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }
