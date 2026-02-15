@@ -17,3 +17,11 @@
     "scripts": {
     "local": "nodemon ./src/server.ts"
   },
+
+
+  ## other 
+
+
+    "scripts": {
+      "start": "ts-node src/server.ts"
+  },

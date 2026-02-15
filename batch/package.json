@@ -2,10 +2,10 @@
   "name": "batch",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/server.js",
+  "main": "server.ts",
   "scripts": {
     "build": "npm install && npx prisma generate",
-    "start": "tsc && node dist/server.js"
+    "start": "ts-node src/server.ts"
   },
   "keywords": [],
   "author": "",
