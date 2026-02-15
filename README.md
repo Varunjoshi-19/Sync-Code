@@ -7,21 +7,22 @@
 
 ### BACKEND SCRIPT FOR PRODUCTION : 
 
-   "scripts": {
-    "build": "npx prisma generate && npm install && tsc",
-    "start": "node dist/server.js"
-  },
+# PRODUCTION : 
 
-## DEV : 
+ "main" : "/src/server.js",
+
+ "scripts" : {
+   "build" : "npm install && npx prisma generate  && tsc",
+     "start": "node dist/src/server.js"
+ }
+
+
+
+## DEVLOPEMENT : 
    "main": "server.ts",
     "scripts": {
     "local": "nodemon ./src/server.ts"
   },
 
 
-  ## other 
-
-
-    "scripts": {
-      "start": "ts-node src/server.ts"
-  },
+ 
