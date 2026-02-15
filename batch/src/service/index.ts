@@ -54,23 +54,25 @@ const handleLogin = async (req: Request, res: Response) => {
             { expiresIn: "7d" }
         );
 
-        console.log("token", accessToken, refreshToken);
+
+        const isProduction = process.env.NODE_ENV === "production";
 
         res.cookie("access-token", accessToken, {
             httpOnly: true,
-            secure: true,
-            sameSite: "lax",
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
             maxAge: 10 * 60 * 1000,
             path: "/"
         });
 
         res.cookie("refresh-token", refreshToken, {
             httpOnly: true,
-            secure: true,
-            sameSite: "lax",
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000,
             path: "/"
         });
+
 
 
         return res.status(200).json({

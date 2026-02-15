@@ -26,7 +26,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 });
 
                 const data = await res.json();
-                console.log(data);
 
                 if (!res.ok) {
                     setLoggedIn(false);
