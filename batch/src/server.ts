@@ -15,8 +15,8 @@ async function startServer() {
   const PORT = process.env.PORT || 4000;
   const networkPort: any = "0.0.0.0";
 
-  const allowedOrigins = [process.env.ALLOWED_ORIGIN || "http://localhost:3000", "http://192.168.1.4:3000"];
-
+  const allowedOrigins = process.env.ALLOWED_ORIGIN || ["http://localhost:3000", "http://192.168.1.4:3000"];
+  console.log("Allowed Origins:", allowedOrigins);
   app.use(cors({
     origin: allowedOrigins,
     methods: ["GET", "POST"],
