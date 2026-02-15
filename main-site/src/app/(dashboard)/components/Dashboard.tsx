@@ -174,7 +174,7 @@ const Dashboard = () => {
             </div>
           </section>
 
-          {/* <section className="rounded-2xl border border-[#30363d] bg-[#161b22]/80 backdrop-blur overflow-hidden shadow-2xl">
+          <section className="rounded-2xl border border-[#30363d] bg-[#161b22]/80 backdrop-blur overflow-hidden shadow-2xl">
             <div className="flex items-center gap-2 px-4 py-3 border-b border-[#30363d] bg-[#0d1117]/50">
               <div className="w-3 h-3 rounded-full bg-[#ff7b72]" />
               <div className="w-3 h-3 rounded-full bg-[#f2cc60]" />
@@ -228,7 +228,7 @@ const Dashboard = () => {
             <span className="flex items-center gap-2">
               <span className="text-[#3fb950]">✓</span> Free forever
             </span>
-          </div> */}
+          </div>
         </div>
       </div>
     </>
@@ -237,11 +237,4 @@ const Dashboard = () => {
 };
 
 
-// const Dashboard = () => {
-// return(
-//   <div>
-//     Dashboard
-//   </div>
-// )
-// }
 export default Dashboard;
