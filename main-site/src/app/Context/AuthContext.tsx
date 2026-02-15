@@ -20,9 +20,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const validateUser = async () => {
             setLoader(true);
             try {
-                const res = await fetch(ApiEndPoints.validate, {
+                const res = await fetch("/api/auth/me", {
                     method: "POST",
-                    credentials: "include",
+                    credentials: "include", 
                 });
 
                 const data = await res.json();
@@ -30,20 +30,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 if (!res.ok) {
                     setLoggedIn(false);
                     handleSetRandomUser();
-
                 } else {
                     setUser(data.user);
                     setLoggedIn(true);
                 }
-
             } catch {
                 setLoggedIn(false);
                 handleSetRandomUser();
-
             } finally {
                 setLoader(false);
             }
-        }
+        };
+
 
         validateUser();
     }, []);
