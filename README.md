@@ -53,16 +53,15 @@
 
 
 prisma.config.ts 
+const { defineConfig } = require("prisma/config");
 
-import { defineConfig } from "prisma/config";
-
-export default defineConfig({
+module.exports = defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    url: process.env.DATABASE_URL,
   },
 });
 
