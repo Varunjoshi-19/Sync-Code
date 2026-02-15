@@ -13,7 +13,7 @@ export default function Pricing({ popUp = false, setClose }: PricingProps) {
         "Unlimited Collaborators",
         "View Only Mode",
         "No Ads including collaborators",
-        "Default CodeSync Settings",
+        "Default CodeSync Settings"
     ];
 
     return (

@@ -1,15 +1,15 @@
 "use client";
 
-import useRoom from "@/app/hooks";
+import AccountDetails from "@/app/Modules/AccountDetails";
 import { ModalInfo, OptionType } from "@/app/Interfaces";
-import Modal from "@/app/Modules/Modal";
-import { useGlobalStore } from "@/app/Store";
 import { useRoomStore } from "@/app/Store/store";
+import { useGlobalStore } from "@/app/Store";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import toast from "react-hot-toast";
 import socket from "@/app/hooks/socket";
-import AccountDetails from "@/app/Modules/AccountDetails";
+import Modal from "@/app/Modules/Modal";
+import toast from "react-hot-toast";
+import useRoom from "@/app/hooks";
 
 
 
@@ -41,23 +41,21 @@ const Dashboard = () => {
       type: "CREATE",
       isOpen: true,
       title: "Create a new room",
-      description:
-        "Enter your name to start a room and invite others to collaborate.",
+      description: "Enter your name to start a room and invite others to collaborate.",
       btnType: "Create Room",
       holder: "Your name",
-      callbackFun: handleCreateRoom,
+      callbackFun: handleCreateRoom
     },
 
     JOIN: {
       type: "JOIN",
       isOpen: true,
       title: "Join an existing room",
-      description:
-        "Enter the room ID shared with you to join the session.",
+      description: "Enter the room ID shared with you to join the session.",
       btnType: "Join Room",
       holder: "Room ID",
-      callbackFun: handleJoinRoom,
-    },
+      callbackFun: handleJoinRoom
+    }
   };
 
 
@@ -75,7 +73,7 @@ const Dashboard = () => {
 
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [chooseOption]);
+  }, []);
 
 
 
@@ -86,10 +84,7 @@ const Dashboard = () => {
         <div
           className="fixed inset-0 opacity-[0.03]"
           style={{
-            backgroundImage: `
-            linear-gradient(#58a6ff 1px, transparent 1px),
-            linear-gradient(90deg, #58a6ff 1px, transparent 1px)
-          `,
+            backgroundImage: `linear-gradient(#58a6ff 1px, transparent 1px),linear-gradient(90deg, #58a6ff 1px, transparent 1px)`,
             backgroundSize: "48px 48px",
           }}
         />
@@ -119,10 +114,11 @@ const Dashboard = () => {
                   <span
                     onClick={() => setAccountDetails(prev => !prev)}
                     style={{ border: `2px solid ${accountDetails ? "white" : "transparent"}` }}
-                    className={`text-white opacity-50 cursor-pointer px-2 py-2 
-        hover:opacity-100 transition-opacity `}>
+                    className="text-white opacity-50 cursor-pointer px-2 py-2 hover:opacity-100 transition-opacity"
+                  >
                     {user?.fullName?.toString().toUpperCase()}
                   </span>
+
                   {accountDetails && <AccountDetails />}
                 </div>
                 :
@@ -178,8 +174,7 @@ const Dashboard = () => {
             </div>
           </section>
 
-          {/* Code preview panel */}
-          <section className="rounded-2xl border border-[#30363d] bg-[#161b22]/80 backdrop-blur overflow-hidden shadow-2xl">
+          {/* <section className="rounded-2xl border border-[#30363d] bg-[#161b22]/80 backdrop-blur overflow-hidden shadow-2xl">
             <div className="flex items-center gap-2 px-4 py-3 border-b border-[#30363d] bg-[#0d1117]/50">
               <div className="w-3 h-3 rounded-full bg-[#ff7b72]" />
               <div className="w-3 h-3 rounded-full bg-[#f2cc60]" />
@@ -212,14 +207,14 @@ const Dashboard = () => {
                   <span className="text-[#7ee787]">LiveEditor</span>{" "}
                   <span className="text-[#79c0ff]">roomId</span>
                   <span className="text-[#e6edf3]">=</span>
-                  <span className="text-[#a5d6ff]">{`{room.id}`}</span>
+                  <span className="text-[#a5d6ff]">{"Room Id"}</span>
                   <span className="text-[#e6edf3]">/&gt;;</span>
                 </code>
               </pre>
             </div>
           </section>
 
-          {/* Features strip */}
+         
           <div className="mt-16 flex flex-wrap justify-center gap-8 text-[#8b949e] text-sm">
             <span className="flex items-center gap-2">
               <span className="text-[#3fb950]">✓</span> No install
@@ -233,7 +228,7 @@ const Dashboard = () => {
             <span className="flex items-center gap-2">
               <span className="text-[#3fb950]">✓</span> Free forever
             </span>
-          </div>
+          </div> */}
         </div>
       </div>
     </>
@@ -242,4 +237,11 @@ const Dashboard = () => {
 };
 
 
+// const Dashboard = () => {
+// return(
+//   <div>
+//     Dashboard
+//   </div>
+// )
+// }
 export default Dashboard;

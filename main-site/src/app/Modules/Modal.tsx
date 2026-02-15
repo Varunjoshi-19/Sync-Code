@@ -75,7 +75,7 @@ export default function Modal({ modalInfo, closeModal }: ModalTypes) {
         onClick={() => closeModal(null)}
       />
 
-      <div className="relative bg-white w-[90%] max-w-md rounded-2xl shadow-2xl p-8 animate-scaleIn">
+      <div className={`relative bg-white w-[90%] max-w-md rounded-2xl shadow-2xl p-8 animate-scaleIn`}>
         <h2 className="text-xl font-semibold text-center text-black">
           {title}
         </h2>
@@ -99,9 +99,8 @@ export default function Modal({ modalInfo, closeModal }: ModalTypes) {
               setRoomError(null);
             }
           }}
-          className="w-full text-black border rounded-xl px-4 py-3 
-                     focus:outline-none focus:ring-2 focus:ring-black"
-        />
+          className={`w-full text-black border rounded-xl px-4 py-3 
+                     focus:outline-none focus:ring-2 focus:ring-black`} />
 
         {error && (
           <p className="text-red-500 text-sm mt-2">{error}</p>
@@ -110,9 +109,8 @@ export default function Modal({ modalInfo, closeModal }: ModalTypes) {
         <button
           onClick={handleSubmit}
           disabled={!value.trim()}
-          className="w-full mt-6 bg-black text-white py-3 rounded-xl 
-                     hover:opacity-90 transition disabled:opacity-40 cursor-pointer"
-        >
+          className={`w-full mt-6 bg-black text-white py-3 rounded-xl 
+                     hover:opacity-90 transition disabled:opacity-40 cursor-pointer`}>
           {btnType}
         </button>
       </div>

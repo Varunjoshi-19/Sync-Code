@@ -16,6 +16,7 @@ import { PanelInfo, SupportedLangType } from "@/app/Interfaces";
 import { helper } from "@/app/Utils";
 import { languageList } from "@/app/constants";
 import { useGlobalStore } from "@/app/Store";
+import { editor } from "monaco-editor";
 
 
 export default function RoomPage() {
@@ -97,7 +98,7 @@ export default function RoomPage() {
 
     }
 
-    const handleEditorDidMount: OnMount = (editor) => {
+    const handleEditorDidMount: OnMount = (editor: editor.IStandaloneCodeEditor) => {
         editorRef.current = editor;
         editor.onDidChangeCursorSelection((e) => {
             socket.emit("cursor-move", {
@@ -198,7 +199,7 @@ export default function RoomPage() {
                         width="100%"
                         language={langId}
                         value={editorText}
-                        onChange={(value) => handleEditorOnChange(value ?? "")}
+                        onChange={(value : string  | undefined) => handleEditorOnChange(value ?? "")}
                         options={{
                             placeholder:
                                 "Write or paste code here then share. Anyone you share with will see code as it is typed!",
