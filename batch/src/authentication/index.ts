@@ -5,7 +5,7 @@ import { prisma } from "../database/connection";
 
 const verifyJwt = (token: string, secret: string) =>
     new Promise<any>((resolve, reject) => {
-        jwt.verify(token, secret, (err, decoded) => {
+        jwt.verify(token, secret, (err : any, decoded : any) => {
             if (err) reject(err);
             else resolve(decoded);
         });
