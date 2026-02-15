@@ -27,7 +27,6 @@ const handleValidateToken = async (req: Request, res: Response) => {
     const accessToken = req.cookies["access-token"];
     const refreshToken = req.cookies["refresh-token"];
 
-      console.log("token" , accessToken ,refreshToken);
 
     if (!accessToken) {
         await handleTokenRefresh(refreshToken, res);
