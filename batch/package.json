@@ -32,10 +32,10 @@
     "socket.io": "^4.8.3",
     "ws": "^8.19.0",
     "y-websocket": "^3.0.0",
+    "prisma": "^7.3.0",
     "yjs": "^13.6.29"
   },
   "devDependencies": {
-    "prisma": "^7.3.0",
     "typescript": "^5.9.3"
   }
 }
