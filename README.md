@@ -9,12 +9,10 @@
 
 
 ## for ts
-"scripts": {
-    "build": "tsc",
-    "start": "ts-node src/main/main.ts"
+  "scripts": {
+    "build": "npm install && npx prisma generate",
+    "start": "ts-node src/server.ts"
   },
-  
-  
   
   ## for js
 
