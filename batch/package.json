@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npm install && npx prisma generate",
-    "start": "ts-node src/server.ts"
+    "build": "npm install && tsx && npx prisma generate",
+    "start": "node dist/server.js"
   },
   "keywords": [],
   "author": "",
