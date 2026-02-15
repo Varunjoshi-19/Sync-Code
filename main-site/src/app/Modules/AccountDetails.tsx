@@ -24,7 +24,7 @@ const AccountDetails = () => {
         setLoggedIn(false);
         setUser(null);
         handleSetRandomUser();
-        await fetch(ApiEndPoints.logout, { method: 'POST', credentials: "include" });
+        await fetch("/api/auth/logout", { method: 'POST', credentials: "include" });
         router.push("/");
     }
 
